@@ -30,8 +30,7 @@ public class ClasseController {
 
     @GetMapping
     public Flux<ClasseCreateResponse> index() {
-        return classeService.findAll()
-                .flatMap(mapper::classeEntityToClasseCreateResponse);
+        return classeHelper.findAll();
 
     }
 
@@ -42,20 +41,12 @@ public class ClasseController {
 
     @GetMapping("/{id}")
     public Mono<ClasseCreateResponse> findById(@PathVariable long id) {
-        return classeService.findById(id)
-                .switchIfEmpty(Mono.error(new ClasseServiceNotFoundException(
-                        "La classe avec l'id " + id + " n'existe pas!")))
-                .map(mapper::classeEntityToClasseCreateResponse)
-                .flatMap(response->response);
+        return classeHelper.findById(id);
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<String>> remove(@PathVariable long id) {
-        return classeService.findById(id)
-                .switchIfEmpty(Mono.error(new ClasseServiceNotFoundException(
-                        "La classe avec l'id " + id + " n'existe pas!")))
-                .flatMap(classe -> classeService.remove(classe)
-                        .thenReturn(ResponseEntity.ok("Deleted!")));
+        return classeHelper.remove(id);
     }
 
     @PutMapping("/{id}")

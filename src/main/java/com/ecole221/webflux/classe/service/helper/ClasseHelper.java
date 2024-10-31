@@ -7,7 +7,10 @@ import com.ecole221.webflux.classe.service.exception.ClasseServiceException;
 import com.ecole221.webflux.classe.service.exception.ClasseServiceNotFoundException;
 import com.ecole221.webflux.classe.service.mapper.Mapper;
 import com.ecole221.webflux.classe.service.services.IClasse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -85,5 +88,29 @@ public class ClasseHelper {
                 .flatMap(existingClasse ->  classeService.save(existingClasse)
                         .map(mapper::classeEntityToClasseCreateResponse)
                         .flatMap(response -> response));
+    }
+
+    public Flux<ClasseCreateResponse> findAll() {
+        return classeService.findAll()
+                .flatMap(mapper::classeEntityToClasseCreateResponse);
+
+    }
+
+    public Mono<ClasseCreateResponse> findById(long id) {
+        return classeService.findById(id)
+                .switchIfEmpty(Mono.error(new ClasseServiceNotFoundException(
+                        "La classe avec l'id " + id + " n'existe pas!")))
+                .map(mapper::classeEntityToClasseCreateResponse)
+                .flatMap(response->response);
+    }
+
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<String>> remove(long id) {
+        return classeService.findById(id)
+                .switchIfEmpty(Mono.error(new ClasseServiceNotFoundException(
+                        "La classe avec l'id " + id + " n'existe pas!")))
+                .doOnNext(System.out::println)
+                .flatMap(classe -> classeService.remove(classe)
+                        .thenReturn(ResponseEntity.ok("Deleted!")));
     }
 }
