@@ -1,24 +1,20 @@
-package com.ecole221.webflux.classe.service.model;
+package com.ecole221.webflux.classe.service.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
-@Builder
 @Data
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@Table
-public class Classe {
-    @Id
-    private long id;
+@NoArgsConstructor
+public class ClasseCreateRequest {
     private String code;
     private String libelle;
     private int fraisInscription;
     private int mensualite;
-    private int autresFrais;
+    private int autreFrais;
     private long filiereId;
 }
